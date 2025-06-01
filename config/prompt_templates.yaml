@@ -1,1 +1,392 @@
+# Prompt Templates Configuration
+# This file contains reusable prompt templates for various tasks.
 
+templates:
+  # Basic completion templates
+  basic_completion:
+    template: "Complete the following text: {text}"
+    description: "Simple text completion"
+    variables: ["text"]
+    metadata:
+      category: "completion"
+      difficulty: "basic"
+      use_cases: ["text generation", "creative writing"]
+
+  structured_completion:
+    template: |
+      Complete the following text in a {style} style.
+      
+      Text: {text}
+      
+      Requirements:
+      - Maintain the same tone
+      - Keep it {length}
+      - Include relevant details
+      
+      Completion:
+    description: "Structured text completion with style and length requirements"
+    variables: ["text", "style", "length"]
+    metadata:
+      category: "completion"
+      difficulty: "intermediate"
+
+  # Summarization templates
+  basic_summary:
+    template: "Summarize the following text in {max_sentences} sentences:\n\n{text}"
+    description: "Basic text summarization"
+    variables: ["text", "max_sentences"]
+    metadata:
+      category: "summarization"
+      difficulty: "basic"
+
+  executive_summary:
+    template: |
+      Create an executive summary of the following document.
+      
+      Document: {text}
+      
+      Please provide:
+      1. Key findings (2-3 bullet points)
+      2. Main recommendations (2-3 bullet points)
+      3. Next steps (1-2 bullet points)
+      
+      Target audience: {audience}
+      Summary length: {length}
+      
+      Executive Summary:
+    description: "Executive summary for business documents"
+    variables: ["text", "audience", "length"]
+    metadata:
+      category: "summarization"
+      difficulty: "advanced"
+      use_cases: ["business documents", "reports", "presentations"]
+
+  # Question answering templates
+  basic_qa:
+    template: |
+      Based on the following context, answer the question.
+      
+      Context: {context}
+      
+      Question: {question}
+      
+      Answer:
+    description: "Basic question answering with context"
+    variables: ["context", "question"]
+    metadata:
+      category: "qa"
+      difficulty: "basic"
+
+  detailed_qa:
+    template: |
+      You are an expert assistant. Answer the following question based on the provided context.
+      
+      Context: {context}
+      
+      Question: {question}
+      
+      Instructions:
+      - Provide a comprehensive answer
+      - Cite relevant parts of the context
+      - If the context doesn't contain enough information, say so
+      - Use examples where appropriate
+      
+      Answer:
+    description: "Detailed question answering with citations"
+    variables: ["context", "question"]
+    metadata:
+      category: "qa"
+      difficulty: "intermediate"
+
+  # Analysis templates
+  sentiment_analysis:
+    template: |
+      Analyze the sentiment of the following text.
+      
+      Text: {text}
+      
+      Please provide:
+      1. Overall sentiment (positive/negative/neutral)
+      2. Confidence score (0-1)
+      3. Key emotional indicators
+      4. Brief explanation
+      
+      Analysis:
+    description: "Sentiment analysis with detailed breakdown"
+    variables: ["text"]
+    metadata:
+      category: "analysis"
+      difficulty: "intermediate"
+      use_cases: ["social media", "reviews", "feedback"]
+
+  competitive_analysis:
+    template: |
+      Conduct a competitive analysis comparing {company} with its competitors.
+      
+      Company Information: {company_info}
+      Competitor Information: {competitor_info}
+      Market Context: {market_context}
+      
+      Please analyze:
+      1. Strengths and weaknesses
+      2. Market positioning
+      3. Competitive advantages
+      4. Opportunities and threats
+      5. Strategic recommendations
+      
+      Analysis:
+    description: "Business competitive analysis"
+    variables: ["company", "company_info", "competitor_info", "market_context"]
+    metadata:
+      category: "analysis"
+      difficulty: "advanced"
+      use_cases: ["business strategy", "market research"]
+
+  # Translation templates
+  basic_translation:
+    template: "Translate the following text from {source_language} to {target_language}:\n\n{text}"
+    description: "Basic text translation"
+    variables: ["text", "source_language", "target_language"]
+    metadata:
+      category: "translation"
+      difficulty: "basic"
+
+  professional_translation:
+    template: |
+      Translate the following {document_type} from {source_language} to {target_language}.
+      
+      Original text: {text}
+      
+      Requirements:
+      - Maintain professional tone
+      - Preserve formatting and structure
+      - Adapt cultural references appropriately
+      - Ensure accuracy of technical terms
+      
+      Translation:
+    description: "Professional document translation"
+    variables: ["text", "source_language", "target_language", "document_type"]
+    metadata:
+      category: "translation"
+      difficulty: "advanced"
+      use_cases: ["business documents", "legal documents", "technical manuals"]
+
+  # Creative writing templates
+  story_prompt:
+    template: |
+      Write a {genre} story about {topic}.
+      
+      Requirements:
+      - Length: {length}
+      - Include these elements: {elements}
+      - Target audience: {audience}
+      - Tone: {tone}
+      
+      Story:
+    description: "Creative story writing with specific requirements"
+    variables: ["genre", "topic", "length", "elements", "audience", "tone"]
+    metadata:
+      category: "creative"
+      difficulty: "intermediate"
+
+  character_development:
+    template: |
+      Create a detailed character profile for a {character_type} in a {genre} story.
+      
+      Character basics:
+      - Name: {name}
+      - Age: {age}
+      - Background: {background}
+      
+      Please develop:
+      1. Physical description
+      2. Personality traits
+      3. Background and history
+      4. Motivations and goals
+      5. Relationships with other characters
+      6. Character arc potential
+      
+      Character Profile:
+    description: "Detailed character development for creative writing"
+    variables: ["character_type", "genre", "name", "age", "background"]
+    metadata:
+      category: "creative"
+      difficulty: "advanced"
+
+  # Code generation templates
+  function_generator:
+    template: |
+      Create a {language} function that {description}.
+      
+      Requirements:
+      - Function name: {function_name}
+      - Parameters: {parameters}
+      - Return type: {return_type}
+      - Include error handling
+      - Add documentation/comments
+      
+      Code:
+    description: "Programming function generation"
+    variables: ["language", "description", "function_name", "parameters", "return_type"]
+    metadata:
+      category: "code"
+      difficulty: "intermediate"
+      use_cases: ["software development", "prototyping"]
+
+  code_review:
+    template: |
+      Review the following {language} code for:
+      1. Functionality and correctness
+      2. Code quality and best practices
+      3. Performance considerations
+      4. Security issues
+      5. Suggestions for improvement
+      
+      Code to review:
+      ```{language}
+      {code}
+      ```
+      
+      Review:
+    description: "Code review and improvement suggestions"
+    variables: ["language", "code"]
+    metadata:
+      category: "code"
+      difficulty: "advanced"
+
+  # Email templates
+  professional_email:
+    template: |
+      Compose a professional email for the following scenario:
+      
+      Purpose: {purpose}
+      Recipient: {recipient}
+      Sender: {sender}
+      Context: {context}
+      
+      Requirements:
+      - Professional tone
+      - Clear and concise
+      - Include call to action if needed
+      - Appropriate greeting and closing
+      
+      Email:
+    description: "Professional email composition"
+    variables: ["purpose", "recipient", "sender", "context"]
+    metadata:
+      category: "communication"
+      difficulty: "intermediate"
+
+  # Research templates
+  research_summary:
+    template: |
+      Create a research summary on {topic} based on the following sources.
+      
+      Sources: {sources}
+      
+      Please provide:
+      1. Executive summary
+      2. Key findings
+      3. Methodology overview
+      4. Limitations and considerations
+      5. Conclusions and recommendations
+      6. References
+      
+      Target audience: {audience}
+      
+      Research Summary:
+    description: "Academic/professional research summary"
+    variables: ["topic", "sources", "audience"]
+    metadata:
+      category: "research"
+      difficulty: "advanced"
+
+  literature_review:
+    template: |
+      Conduct a literature review on {topic} covering the period {time_period}.
+      
+      Key papers/sources: {sources}
+      Research questions: {research_questions}
+      
+      Structure the review as follows:
+      1. Introduction and scope
+      2. Methodology
+      3. Thematic analysis of literature
+      4. Gaps in current research
+      5. Future research directions
+      6. Conclusion
+      
+      Literature Review:
+    description: "Academic literature review"
+    variables: ["topic", "time_period", "sources", "research_questions"]
+    metadata:
+      category: "research"
+      difficulty: "advanced"
+
+# Categories for organizing templates
+categories:
+  completion:
+    - basic_completion
+    - structured_completion
+  summarization:
+    - basic_summary
+    - executive_summary
+  qa:
+    - basic_qa
+    - detailed_qa
+  analysis:
+    - sentiment_analysis
+    - competitive_analysis
+  translation:
+    - basic_translation
+    - professional_translation
+  creative:
+    - story_prompt
+    - character_development
+  code:
+    - function_generator
+    - code_review
+  communication:
+    - professional_email
+  research:
+    - research_summary
+    - literature_review
+
+# Template metadata for classification
+template_metadata:
+  difficulty_levels:
+    basic: "Simple templates suitable for beginners"
+    intermediate: "Templates requiring some domain knowledge"
+    advanced: "Complex templates for expert users"
+  
+  common_variables:
+    text: "Main text content to process"
+    context: "Background context or additional information"
+    style: "Writing or communication style"
+    tone: "Emotional tone or attitude"
+    length: "Desired length of output"
+    audience: "Target audience for the content"
+    language: "Programming or natural language"
+    topic: "Subject matter or theme"
+    format: "Output format requirements"
+
+# Usage guidelines
+usage_guidelines:
+  best_practices:
+    - "Use descriptive variable names in templates"
+    - "Include clear instructions for complex tasks"
+    - "Specify output format requirements"
+    - "Provide context when necessary"
+    - "Test templates with various inputs"
+  
+  variable_naming:
+    - "Use snake_case for variable names"
+    - "Choose clear, descriptive names"
+    - "Avoid reserved keywords"
+    - "Keep names concise but meaningful"
+  
+  template_structure:
+    - "Start with clear task description"
+    - "Include any necessary context"
+    - "Specify requirements and constraints"
+    - "End with clear output prompt"

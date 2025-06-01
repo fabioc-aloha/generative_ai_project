@@ -1,1 +1,367 @@
+# Logging Configuration
+# This file contains logging settings for the generative AI project.
 
+# Global logging settings
+version: 1
+disable_existing_loggers: false
+
+# Formatters define how log messages are formatted
+formatters:
+  standard:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  detailed:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(module)s.%(funcName)s:%(lineno)d - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  json:
+    format: '{"timestamp": "%(asctime)s", "logger": "%(name)s", "level": "%(levelname)s", "module": "%(module)s", "function": "%(funcName)s", "line": %(lineno)d, "message": "%(message)s"}'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+  
+  colored:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  simple:
+    format: '%(levelname)s - %(message)s'
+
+# Handlers define where log messages are sent
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: colored
+    stream: ext://sys.stdout
+  
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: detailed
+    filename: logs/application.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+    encoding: utf8
+  
+  error_file:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: detailed
+    filename: logs/errors.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+    encoding: utf8
+  
+  json_file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/application.json
+    maxBytes: 10485760  # 10MB
+    backupCount: 3
+    encoding: utf8
+  
+  llm_interactions:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/llm_interactions.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 10
+    encoding: utf8
+  
+  performance:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/performance.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+    encoding: utf8
+  
+  security:
+    class: logging.handlers.RotatingFileHandler
+    level: WARNING
+    formatter: detailed
+    filename: logs/security.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 10
+    encoding: utf8
+
+# Loggers define the logging hierarchy
+loggers:
+  # Root logger
+  '':
+    level: INFO
+    handlers: [console, file, error_file]
+    propagate: false
+  
+  # LLM module loggers
+  src.llm:
+    level: DEBUG
+    handlers: [console, file, llm_interactions]
+    propagate: false
+  
+  src.llm.openai_client:
+    level: INFO
+    handlers: [llm_interactions]
+    propagate: true
+  
+  src.llm.claude_client:
+    level: INFO
+    handlers: [llm_interactions]
+    propagate: true
+  
+  src.llm.utils:
+    level: DEBUG
+    handlers: [file]
+    propagate: true
+  
+  # Prompt engineering loggers
+  src.prompt_engineering:
+    level: INFO
+    handlers: [console, file]
+    propagate: false
+  
+  src.prompt_engineering.chain:
+    level: DEBUG
+    handlers: [file, performance]
+    propagate: true
+  
+  # Utils loggers
+  src.utils:
+    level: INFO
+    handlers: [console, file]
+    propagate: false
+  
+  src.utils.rate_limiter:
+    level: INFO
+    handlers: [file, performance]
+    propagate: true
+  
+  src.utils.cache:
+    level: INFO
+    handlers: [file, performance]
+    propagate: true
+  
+  src.utils.token_counter:
+    level: DEBUG
+    handlers: [file]
+    propagate: true
+  
+  # Error handling loggers
+  src.handlers.error_handler:
+    level: WARNING
+    handlers: [console, error_file, security]
+    propagate: false
+  
+  # Special purpose loggers
+  llm_interactions:
+    level: INFO
+    handlers: [llm_interactions]
+    propagate: false
+  
+  performance:
+    level: INFO
+    handlers: [performance]
+    propagate: false
+  
+  security:
+    level: WARNING
+    handlers: [security]
+    propagate: false
+  
+  # Third-party library loggers
+  httpx:
+    level: WARNING
+    handlers: [file]
+    propagate: true
+  
+  urllib3:
+    level: WARNING
+    handlers: [file]
+    propagate: true
+  
+  requests:
+    level: WARNING
+    handlers: [file]
+    propagate: true
+
+# Environment-specific configurations
+environments:
+  development:
+    root_level: DEBUG
+    console_level: DEBUG
+    file_level: DEBUG
+    enable_json_logging: false
+    log_file_size: 5242880  # 5MB
+    backup_count: 3
+    
+  testing:
+    root_level: WARNING
+    console_level: ERROR
+    file_level: WARNING
+    enable_json_logging: false
+    log_file_size: 1048576  # 1MB
+    backup_count: 1
+    
+  production:
+    root_level: INFO
+    console_level: WARNING
+    file_level: INFO
+    enable_json_logging: true
+    log_file_size: 52428800  # 50MB
+    backup_count: 10
+
+# Log directory structure
+log_directories:
+  base: "logs"
+  subdirectories:
+    - "archived"
+    - "daily"
+    - "errors"
+    - "performance"
+    - "security"
+
+# Log retention policies
+retention:
+  default_days: 30
+  error_logs_days: 90
+  performance_logs_days: 14
+  security_logs_days: 180
+  llm_interaction_logs_days: 60
+
+# Log analysis and monitoring
+monitoring:
+  enable_log_analysis: true
+  analysis_interval: 3600  # seconds (1 hour)
+  alert_thresholds:
+    error_rate: 0.05  # 5% error rate
+    warning_rate: 0.1  # 10% warning rate
+    critical_errors: 1  # Any critical error
+  
+  metrics_collection:
+    enable: true
+    interval: 300  # seconds (5 minutes)
+    metrics:
+      - log_volume
+      - error_rate
+      - warning_rate
+      - response_times
+      - token_usage
+      - api_costs
+
+# Security and privacy settings
+security:
+  mask_sensitive_data: true
+  sensitive_patterns:
+    - "api[_-]?key"
+    - "password"
+    - "token"
+    - "secret"
+    - "credential"
+  
+  sanitize_logs: true
+  max_log_entry_size: 10240  # 10KB
+  encrypt_logs: false  # Set to true for production
+  
+  pii_detection:
+    enable: true
+    patterns:
+      - email_addresses
+      - phone_numbers
+      - ip_addresses
+      - user_ids
+
+# Performance optimization
+performance:
+  async_logging: true
+  buffer_size: 1024
+  flush_interval: 5  # seconds
+  compression:
+    enable: true
+    algorithm: "gzip"
+    level: 6
+  
+  log_sampling:
+    enable: false  # Enable for high-volume production
+    sample_rate: 0.1  # 10% sampling
+
+# Integration settings
+integrations:
+  # External log aggregation services
+  elasticsearch:
+    enabled: false
+    host: "localhost"
+    port: 9200
+    index_pattern: "generative-ai-{date}"
+  
+  splunk:
+    enabled: false
+    host: "localhost"
+    port: 8089
+    index: "generative_ai"
+  
+  datadog:
+    enabled: false
+    api_key: "${DATADOG_API_KEY}"
+    service_name: "generative-ai-project"
+  
+  # Custom webhooks for alerts
+  webhooks:
+    error_alerts:
+      enabled: false
+      url: "${ERROR_WEBHOOK_URL}"
+      threshold: "ERROR"
+    
+    performance_alerts:
+      enabled: false
+      url: "${PERFORMANCE_WEBHOOK_URL}"
+      threshold: 5.0  # seconds
+
+# Custom log filters
+filters:
+  rate_limit_filter:
+    class: "src.utils.logger.RateLimitFilter"
+    rate: 10  # messages per minute
+    burst: 5
+  
+  sensitive_data_filter:
+    class: "src.utils.logger.SensitiveDataFilter"
+    patterns: ["password", "api_key", "token"]
+
+# Log rotation and archival
+rotation:
+  schedule: "daily"  # Options: hourly, daily, weekly, monthly
+  compress_archives: true
+  archive_format: "gzip"
+  cleanup_old_logs: true
+  
+  custom_rotation:
+    error_logs:
+      when: "midnight"
+      interval: 1
+      backup_count: 30
+    
+    performance_logs:
+      when: "H"  # Hourly
+      interval: 6  # Every 6 hours
+      backup_count: 28  # Keep for 7 days
+
+# Debugging and development
+debug:
+  enable_debug_mode: false
+  verbose_exceptions: true
+  log_stack_traces: true
+  include_locals: false  # Include local variables in tracebacks
+  
+  profiling:
+    enable: false
+    profile_interval: 60  # seconds
+    profile_file: "logs/profile.log"
+
+# Custom formatters and handlers can be defined here
+custom_components:
+  formatters: {}
+  handlers: {}
+  filters: {}
